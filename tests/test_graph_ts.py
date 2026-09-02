@@ -2,7 +2,7 @@
 
 import pytest
 
-from autoccv import CCV, all_from_reactants_and_products, graph
+from autoccv import CCV, graph, map_reaction
 from autoccv.graph import ts
 
 
@@ -16,13 +16,11 @@ from autoccv.graph import ts
         ("CCO[O]", "C=C.O[O]", 1),
     ],
 )
-def test__all_from_reactants_and_products(
-    rct_smi: str, prd_smi: str, ts_count: int
-) -> None:
+def test__map_reaction(rct_smi: str, prd_smi: str, ts_count: int) -> None:
     """Test transition state graph generation from reactants and products."""
     rct_gra0 = graph.from_smiles(rct_smi)
     prd_gra0 = graph.from_smiles(prd_smi)
-    ts_gras = list(all_from_reactants_and_products(rct_gra0, prd_gra0))
+    ts_gras = list(map_reaction(rct_gra0, prd_gra0))
     assert len(ts_gras) == ts_count
     for ts_gra in ts_gras:
         rct_gra = ts.reactants_graph(ts_gra)

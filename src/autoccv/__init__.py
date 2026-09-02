@@ -3,6 +3,6 @@
 __version__ = "0.0.0"
 
 from . import element, graph
-from .ccv import CCV, all_from_reactants_and_products
+from .ccv import CCV, map_reaction
 
-__all__ = ["CCV", "all_from_reactants_and_products", "element", "graph"]
+__all__ = ["CCV", "element", "graph", "map_reaction"]

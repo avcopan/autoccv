@@ -11,8 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `autoccv.graph`: molecular graph implementation extracted from `automol.graph`
   (`base` generic NetworkX + Pydantic engine, `mol` molecular graph, `ts`
   transition-state graph).
-- `autoccv.ccv`: the CCV reaction-mapping algorithm (`CCV`,
-  `all_from_reactants_and_products`).
+- `autoccv.ccv`: the CCV reaction-mapping algorithm (`CCV`, `map_reaction`).
 - `autoccv.element`: periodic-table data extracted from `automatics.element`,
   with `scripts/elements-data.py` to regenerate it via `mendeleev`.
 

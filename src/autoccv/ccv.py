@@ -23,19 +23,21 @@ BondSymbol = tuple[str, str]
 
 
 # From
-def all_from_reactants_and_products(
-    rct_gra: MolGraph, prd_gra: MolGraph
-) -> Iterator[TransGraph]:
-    """Fewest-bonds-first constructive count vector mappings.
+def map_reaction(reactants: MolGraph, products: MolGraph) -> Iterator[TransGraph]:
+    """Map a reaction, yielding candidate transition-state graphs.
+
+    Uses the fewest-bonds-first constructive count vector algorithm. Each
+    transition-state graph encodes an atom-to-atom mapping together with the
+    bonds that form and break.
 
     Args:
-        rct_gra: The reactant graph.
-        prd_gra: The product graph.
+        reactants: The reactant graph.
+        products: The product graph.
 
     Yields:
-        Transition-state graphs.
+        Candidate transition-state graphs.
     """
-    ccv = CCV(rct_gra, prd_gra)
+    ccv = CCV(reactants, products)
     yield from (gra for gra, _ in ccv.results())
 
 
