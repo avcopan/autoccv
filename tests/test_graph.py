@@ -1,8 +1,11 @@
 """Graph tests."""
 
+import enum
+
 import pytest
 
 from autoccv import graph
+from autoccv.graph.base import FieldEnumMismatchError, FieldEnumModel
 
 
 def test__smiles() -> None:
@@ -35,6 +38,45 @@ def test__symbols() -> None:
     water_smiles = "O"
     water = graph.from_smiles(water_smiles)
     assert graph.symbols(water) == ["O", "H", "H"]
+
+
+def test__field_enum_matches_fields() -> None:
+    """A nested Field enum in parity with the model fields is accepted."""
+
+    class Good(FieldEnumModel):
+        class Field(enum.StrEnum):
+            a = "a"
+            b = "b"
+
+        a: int
+        b: str
+
+    assert Good.Field.a == "a"
+    assert set(Good.Field) == set(Good.model_fields)
+
+
+def test__field_enum_missing_member() -> None:
+    """A field with no Field member fails at class-creation time."""
+    with pytest.raises(FieldEnumMismatchError, match="missing from Field"):
+
+        class MissingMember(FieldEnumModel):
+            class Field(enum.StrEnum):
+                a = "a"
+
+            a: int
+            b: str
+
+
+def test__field_enum_extra_member() -> None:
+    """A Field member that is not a field fails at class-creation time."""
+    with pytest.raises(FieldEnumMismatchError, match="not a model field"):
+
+        class ExtraMember(FieldEnumModel):
+            class Field(enum.StrEnum):
+                a = "a"
+                c = "c"
+
+            a: int
 
 
 @pytest.mark.parametrize(

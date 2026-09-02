@@ -6,6 +6,7 @@ InChI. Bond order information is excluded by design.
 """
 
 from collections.abc import Mapping, Sequence
+from enum import StrEnum
 
 from rdkit import Chem
 from rdkit.Chem import rdchem
@@ -42,6 +43,11 @@ def _add_atom_numbers(mol: Mol, to_number: Mapping[int, int]) -> Mol:
 
 class Atom(Node):
     """Represents an atom in a molecule."""
+
+    class Field(StrEnum):
+        """Field names of :class:`Atom`, for use as graph attribute keys."""
+
+        symbol = "symbol"
 
     symbol: str
 
@@ -87,7 +93,7 @@ def symbols(gra: MolGraph, keys: Sequence[int] | None = None) -> list[str]:
         The atomic symbols.
     """
     keys = node_keys(gra) if keys is None else keys
-    return [gra.nodes[key][Atom.symbol] for key in keys]
+    return [gra.nodes[key][Atom.Field.symbol] for key in keys]
 
 
 def element_bonding_capacities(

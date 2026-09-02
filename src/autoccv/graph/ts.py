@@ -24,6 +24,11 @@ class Change(StrEnum):
 class TransBond(Bond):
     """Represents a bond in a transition-state graph."""
 
+    class Field(StrEnum):
+        """Field names of :class:`TransBond`, for use as graph attribute keys."""
+
+        change = "change"
+
     change: Change | None
 
     def to_rdkit_bond_type(self) -> rdchem.BondType:
@@ -78,7 +83,7 @@ def bond_changes(gra: TransGraph) -> dict[EdgeKey, Change]:
     Returns:
         The bond changes, keyed by bond.
     """
-    change = nx.get_edge_attributes(gra, TransBond.change)
+    change = nx.get_edge_attributes(gra, TransBond.Field.change)
     return {k: v for k, v in change.items() if v is not None}
 
 

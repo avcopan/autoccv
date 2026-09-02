@@ -10,36 +10,61 @@ project as a starting point for graph algorithms.
 """
 
 import copy
+import enum
 from collections.abc import Collection, Iterator
 from typing import Any, TypeVar
 
 import networkx as nx
 from networkx.algorithms.isomorphism import GraphMatcher
 from pydantic import BaseModel
-from pydantic._internal._model_construction import ModelMetaclass
 
 EdgeKey = tuple[int, int]
 
 
-class _CustomBaseModelMeta(ModelMetaclass):
-    def __getattr__(self, item: str):  # noqa: ANN204
-        try:
-            super().__getattr__(item)  # ty:ignore[unresolved-attribute]
-        except AttributeError:
-            if item in self.__dict__.get("__pydantic_fields__", ()):
-                return item
-            raise
+class FieldEnumMismatchError(TypeError):
+    """A model's nested ``Field`` enum does not match its declared fields."""
 
 
-class CustomBaseModel(BaseModel, metaclass=_CustomBaseModelMeta):
-    """A custom base model that allows accessing field names as class attributes."""
+class FieldEnumModel(BaseModel):
+    """Base model whose field names can be mirrored by a nested ``Field`` enum.
+
+    A subclass that needs its field names as string constants (e.g. as NetworkX
+    attribute keys) declares a nested ``class Field(enum.StrEnum)``. Its members
+    are checked for exact parity with the model fields at class-creation time, so
+    the enum can never silently drift from the schema. Because ``StrEnum``
+    members are real ``str`` instances, ``Atom.Field.symbol`` can be used
+    directly as a key -- no ``.value`` needed.
+    """
+
+    @classmethod
+    def __pydantic_init_subclass__(cls, **kwargs: object) -> None:
+        """Check any nested ``Field`` enum for parity with the model fields."""
+        super().__pydantic_init_subclass__(**kwargs)
+
+        field_enum = getattr(cls, "Field", None)
+        if not (isinstance(field_enum, type) and issubclass(field_enum, enum.Enum)):
+            return
+
+        enum_names = {member.value for member in field_enum}
+        model_names = set(cls.model_fields)
+        if enum_names != model_names:
+            missing = sorted(model_names - enum_names)
+            extra = sorted(enum_names - model_names)
+            parts = []
+            if missing:
+                parts.append(f"missing from Field: {missing}")
+            if extra:
+                parts.append(f"not a model field: {extra}")
+            detail = "; ".join(parts)
+            msg = f"{cls.__name__}.Field is out of sync with its fields ({detail})"
+            raise FieldEnumMismatchError(msg)
 
 
-class Node(CustomBaseModel):
+class Node(FieldEnumModel):
     """Base class for node data. Subclass to add validated fields."""
 
 
-class Edge(CustomBaseModel):
+class Edge(FieldEnumModel):
     """Base class for edge data. Subclass to add validated fields."""
 
 

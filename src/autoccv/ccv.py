@@ -217,7 +217,9 @@ def bond_symbols(gra: Graph) -> dict[EdgeKey, BondSymbol]:
     """
     return {
         (key1, key2): tuple(
-            sorted([gra.nodes[key1][Atom.symbol], gra.nodes[key2][Atom.symbol]])
+            sorted(
+                [gra.nodes[key1][Atom.Field.symbol], gra.nodes[key2][Atom.Field.symbol]]
+            )
         )
         for key1, key2 in gra.edges()
     }
