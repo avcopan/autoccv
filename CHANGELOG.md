@@ -8,7 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- See example format below...
+- `autoccv.graph`: molecular graph implementation extracted from `automol.graph`
+  (`base` generic NetworkX + Pydantic engine, `mol` molecular graph, `ts`
+  transition-state graph).
+- `autoccv.ccv`: the CCV reaction-mapping algorithm (`CCV`,
+  `all_from_reactants_and_products`).
+- `autoccv.element`: periodic-table data extracted from `automatics.element`,
+  with `scripts/elements-data.py` to regenerate it via `mendeleev`.
 
 ## [0.0.0] - YYYY-MM-DD
 

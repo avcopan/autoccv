@@ -2,7 +2,12 @@
 name = "autoccv"
 version = "0.0.0"
 authors = [{name = "Andreas V. Copan", email = "avcopan@uga.edu"}]
-dependencies = []
+dependencies = [
+    "more-itertools>=10.0",
+    "networkx>=3.3",
+    "pydantic>=2.5",
+    "rdkit>=2025",
+]
 requires-python = ">= 3.13"
 
 [build-system]
@@ -20,6 +25,7 @@ exclude = [
 select = ["ALL"]
 ignore = [
     "COM812",   # missing trailing comma (handled by format)
+    "RUF022",   # `__all__` is not sorted (kept in a hand-ordered form)
     "TID252",   # relative import
     "D203",     # conflict: incorrect blank line before class (uses D211 instead)
     "D213",     # conflict: multi-line summary second line (uses D212 instead)
@@ -50,8 +56,11 @@ root_package = "autoccv"
 name = "Module Layering"
 type = "layers"
 layers = [
-    "autoccv.layer2",
-    "autoccv.layer1",
+    "autoccv.ccv",
+    "autoccv.graph.ts",
+    "autoccv.graph.mol",
+    "autoccv.graph.base",
+    "autoccv.element",
 ]
 
 # Pytest configurations

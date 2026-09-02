@@ -36,6 +36,7 @@ lefthook = "*"
 rattler-build = "*"
 tbump = "*"
 ipykernel = "*"
+mendeleev = "*"
 
 [feature.dev.pypi-dependencies]
 keepachangelog = "*"
@@ -55,6 +56,8 @@ add = "uv add"
 remove = "uv remove"
 # Local dependency management (see scripts/local.sh)
 local = "./scripts/local.sh"
+# Regenerate src/autoccv/element/elements-data.json (uses mendeleev)
+elements-data = { cmd = "./scripts/elements-data.py" }
 # Individual tasks for pre-commit hooks (must be added to lefthook.yaml)
 fmt = "ruff format ."
 lint = "ruff check . --fix"
