@@ -1,0 +1,80 @@
+[workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+preview = ["pixi-build"]
+
+[dependencies]
+autoccv = { path = "." }
+
+[package]
+name = "autoccv"
+version = "0.0.0"
+
+[package.build]
+backend = { name = "pixi-build-python", version = "*" }
+
+[package.build.config]
+ignore-pyproject-manifest = false
+ignore-pypi-mapping = false
+
+[package.build.config.pypi-conda-map]
+# Add name mappings for packages not on conda-forge
+
+[package.host-dependencies]
+# Python and UV are automatically included
+
+[feature.test.dependencies]
+pytest = "*"
+pytest-cov = "*"
+
+[feature.dev.dependencies]
+uv = "*"
+ruff = "*"
+ty = "*"
+import-linter = "*"
+lefthook = "*"
+rattler-build = "*"
+tbump = "*"
+ipykernel = "*"
+
+[feature.dev.pypi-dependencies]
+keepachangelog = "*"
+
+[environments]
+default = { solve-group = "default" }
+test = { features = ["test"], solve-group = "default"}
+dev = { features = ["dev"], solve-group = "default"}
+
+[feature.test.tasks]
+test = "pytest"
+
+[feature.dev.tasks]
+# Manage pyproject.toml with uv
+uv = "uv"
+add = "uv add"
+remove = "uv remove"
+# Local dependency management (see scripts/local.sh)
+local = "./scripts/local.sh"
+# Individual tasks for pre-commit hooks (must be added to lefthook.yaml)
+fmt = "ruff format ."
+lint = "ruff check . --fix"
+types = "ty check"
+imports = "lint-imports"
+# Run pre-commit hooks (see lefthook.yaml)
+pre-commit = "lefthook run pre-commit --all-files"
+local-pre-commit = "lefthook run local-pre-commit --all-files"
+# Build and publish conda package
+build-conda = "pixi build -o dist"
+publish-conda = "rattler-build upload anaconda dist/*.conda -o avcopan"
+# Build and publish PyPI package
+build-pypi = "uv build"
+publish-pypi = "uv publish"
+publish-test-pypi = "uv publish --publish-url https://test.pypi.org/legacy/"
+# Initiate release
+version = "tbump current-version"
+changelog = { cmd = "keepachangelog release {{ version }}", args=["version"] }
+release = "tbump"
+# Toggle Git hooks on/off
+hooks = "./scripts/hooks.sh"
+# Setup and initialize this repository (only run once)
+init = { cmd = "./scripts/init.sh" }
